@@ -1,0 +1,11 @@
+[package]
+name = "ableton-link"
+version = "0.1.0"
+authors = ["Magnus Herold <magnus.herold@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[build-dependencies]
+cmake = "0.1"
+bindgen = "0.49"
