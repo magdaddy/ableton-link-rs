@@ -8,7 +8,9 @@ fn link_cpp() {
 }
 
 #[cfg(not(target_os = "macos"))]
-fn link_cpp() {}
+fn link_cpp() {
+    println!("cargo:rustc-link-lib=stdc++");  
+}
 
 fn main() {
     // cmake
