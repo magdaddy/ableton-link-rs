@@ -30,9 +30,13 @@ void Link_setStartStopCallback(WLink* lp, void (*callback)(bool));
 
 WClock* Link_clock(WLink* lp);
 
+void Link_withAudioSessionState(WLink* lp, RustClosurePtr cp, void* closure_data);
+void Link_commitAudioSessionState(WLink* lp, WSessionState* ssp);
+
 WSessionState* Link_captureAppSessionState(WLink* lp);
 
 void Link_withAppSessionState(WLink* lp, RustClosurePtr cp, void* closure_data);
+void Link_commitAppSessionState(WLink* lp, WSessionState* ssp);
 
 // SessionState
 
@@ -49,6 +53,10 @@ void SessionState_forceBeatAtTime(WSessionState* ssp, double beat, int64_t time,
 
 void SessionState_setIsPlaying(WSessionState* ssp, bool isPlaying, int64_t time);
 bool SessionState_isPlaying(WSessionState* sp);
+
+int64_t SessionState_timeForIsPlaying(WSessionState* ssp);
+void SessionState_requestBeatAtStartPlayingTime(WSessionState* ssp, double beat, double quantum);
+void SessionState_setIsPlayingAndRequestBeatAtTime(WSessionState* ssp, bool isPlaying, int64_t time, double beat, double quantum);
 
 // Clock
 

@@ -50,6 +50,16 @@ WClock* Link_clock(WLink* lp) {
     return reinterpret_cast<WClock*>(cp);
 }
 
+void Link_withAudioSessionState(WLink* lp, RustClosurePtr cp, void* closure_data) {
+    auto ss = reinterpret_cast<ableton::Link*>(lp)->captureAudioSessionState();
+    cp(closure_data, reinterpret_cast<WSessionState*>(&ss));
+}
+
+void Link_commitAudioSessionState(WLink* lp, WSessionState* ssp) {
+    auto ss = *reinterpret_cast<ableton::Link::SessionState*>(ssp);
+    reinterpret_cast<ableton::Link*>(lp)->commitAudioSessionState(ss);
+}
+
 WSessionState* Link_captureAppSessionState(WLink* lp) {
     auto sss = reinterpret_cast<ableton::Link*>(lp)->captureAppSessionState();
     auto ssh = new ableton::Link::SessionState(sss);
@@ -59,6 +69,11 @@ WSessionState* Link_captureAppSessionState(WLink* lp) {
 void Link_withAppSessionState(WLink* lp, RustClosurePtr cp, void* closure_data) {
     auto ss = reinterpret_cast<ableton::Link*>(lp)->captureAppSessionState();
     cp(closure_data, reinterpret_cast<WSessionState*>(&ss));
+}
+
+void Link_commitAppSessionState(WLink* lp, WSessionState* ssp) {
+    auto ss = *reinterpret_cast<ableton::Link::SessionState*>(ssp);
+    reinterpret_cast<ableton::Link*>(lp)->commitAppSessionState(ss);
 }
 
 // SessionState
@@ -114,6 +129,21 @@ void SessionState_setIsPlaying(WSessionState* ssp, bool isPlaying, int64_t time)
 
 bool SessionState_isPlaying(WSessionState* ssp) {
     return reinterpret_cast<ableton::Link::SessionState*>(ssp)->isPlaying();
+}
+
+int64_t SessionState_timeForIsPlaying(WSessionState* ssp) {
+    return reinterpret_cast<ableton::Link::SessionState*>(ssp)->timeForIsPlaying().count();
+}
+
+void SessionState_requestBeatAtStartPlayingTime(WSessionState* ssp, double beat, double quantum) {
+    auto asp = reinterpret_cast<ableton::Link::SessionState*>(ssp);
+    asp->requestBeatAtStartPlayingTime(beat, quantum);
+}
+
+void SessionState_setIsPlayingAndRequestBeatAtTime(WSessionState* ssp, bool isPlaying, int64_t time, double beat, double quantum) {
+    auto asp = reinterpret_cast<ableton::Link::SessionState*>(ssp);
+    std::chrono::microseconds t(time);
+    asp->setIsPlayingAndRequestBeatAtTime(isPlaying, t, beat, quantum);
 }
 
 // Clock

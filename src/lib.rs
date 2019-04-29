@@ -1,6 +1,6 @@
 #[allow(non_camel_case_types)]
 #[allow(non_snake_case)]
-pub mod sys {
+mod sys {
     include!(concat!(env!("OUT_DIR"), "/link_rs.rs"));
 }
 
@@ -48,7 +48,7 @@ pub struct Link {
 impl Drop for Link {
     fn drop(&mut self) {
         unsafe { Link_destroy(self.wlink) }
-        println!("Link destroyed!")
+        // println!("Link destroyed!")
     }
 }
 
@@ -146,22 +146,50 @@ impl Link {
         Clock { wc: unsafe { Link_clock(self.wlink) } }
     }
 
-    /// ![](https://upload.wikimedia.org/wikipedia/commons/5/59/QSicon_missing.svg)
+    // Capture the current Link Session State from the audio thread.
+    // * Thread-safe: no
+    // * Realtime-safe: yes
+    // 
+    // This method should ONLY be called in the audio thread
+    // and must not be accessed from any other threads. The returned
+    // object stores a snapshot of the current Link Session State, so it
+    // should be captured and used in a local scope. Storing the
+    // Session State for later use in a different context is not advised
+    // because it will provide an outdated view.
+    // fn capture_audio_session_state(&self) -> SessionState {
+    //     unimplemented!()
+    // }
+
     /// Capture the current Link Session State from the audio thread.
     /// * Thread-safe: no
     /// * Realtime-safe: yes
     /// 
     /// This method should ONLY be called in the audio thread
-    /// and must not be accessed from any other threads. The returned
-    /// object stores a snapshot of the current Link Session State, so it
-    /// should be captured and used in a local scope. Storing the
+    /// and must not be accessed from any other threads. The closure
+    /// passes a snapshot of the current Link Session State, it
+    /// should only be used in the local scope. Storing the
     /// Session State for later use in a different context is not advised
     /// because it will provide an outdated view.
-    pub fn capture_audio_session_state(&self) -> SessionState {
-        unimplemented!()
+    pub fn with_audio_session_state<F>(&self, f: F)
+        where F: FnMut(SessionState)
+    {
+        let user_data = &f as *const _ as *mut c_void;
+        unsafe {
+            Link_withAudioSessionState(self.wlink, Some(closure_wrapper::<F>), user_data);
+        }
+
+        extern fn closure_wrapper<F>(closure: *mut c_void, wss: *mut WSessionState)
+            where F: FnMut(SessionState)
+        {
+            let opt_closure = closure as *mut Option<F>;
+            unsafe {
+                let mut fnx = (*opt_closure).take().unwrap();
+                let ss = SessionState { wss };
+                fnx(ss);
+            }
+        }
     }
 
-    /// ![](https://upload.wikimedia.org/wikipedia/commons/5/59/QSicon_missing.svg)
     /// Commit the given Session State to the Link session from the audio thread.
     /// * Thread-safe: no
     /// * Realtime-safe: yes
@@ -170,9 +198,24 @@ impl Link {
     /// thread. The given Session State will replace the current Link
     /// state. Modifications will be communicated to other peers in the
     /// session.
-    pub fn commit_audio_session_state(&mut self, _ss: SessionState) {
-        unimplemented!()
+    pub fn commit_audio_session_state(&mut self, ss: SessionState) {
+        unsafe { Link_commitAudioSessionState(self.wlink, ss.wss) }
     }
+
+    // Capture the current Link Session State from an application thread.
+    // * Thread-safe: yes
+    // * Realtime-safe: no
+    // 
+    // Provides a mechanism for capturing the Link Session
+    // State from an application thread (other than the audio thread).
+    // The returned Session State stores a snapshot of the current Link
+    // state, so it should be captured and used in a local scope.
+    // Storing the it for later use in a different context is not
+    // advised because it will provide an outdated view.
+    // pub fn capture_app_session_state(&self) -> SessionState {
+    //     let wss = unsafe { Link_captureAppSessionState(self.wlink) };
+    //     SessionState { wss }
+    // }
 
     /// Capture the current Link Session State from an application thread.
     /// * Thread-safe: yes
@@ -180,15 +223,10 @@ impl Link {
     /// 
     /// Provides a mechanism for capturing the Link Session
     /// State from an application thread (other than the audio thread).
-    /// The returned Session State stores a snapshot of the current Link
-    /// state, so it should be captured and used in a local scope.
-    /// Storing the it for later use in a different context is not
+    /// The closure passes a Session State that stores a snapshot of the current Link
+    /// state, it should only be used in the local scope.
+    /// Storing it for later use in a different context is not
     /// advised because it will provide an outdated view.
-    pub fn capture_app_session_state(&self) -> SessionState {
-        let wss = unsafe { Link_captureAppSessionState(self.wlink) };
-        SessionState { wss }
-    }
-
     pub fn with_app_session_state<F>(&self, f: F)
         where F: FnMut(SessionState)
     {
@@ -209,7 +247,6 @@ impl Link {
         }
     }
 
-    /// ![](https://upload.wikimedia.org/wikipedia/commons/5/59/QSicon_missing.svg)
     /// Commit the given Session State to the Link session from an
     /// application thread.
     /// * Thread-safe: yes
@@ -218,8 +255,8 @@ impl Link {
     /// The given Session State will replace the current Link
     /// Session State. Modifications of the Session State will be
     /// communicated to other peers in the session.
-    pub fn commit_app_session_state(&mut self, _ss: SessionState) {
-        unimplemented!()
+    pub fn commit_app_session_state(&mut self, ss: SessionState) {
+        unsafe { Link_commitAppSessionState(self.wlink, ss.wss) }
     }
 }
 
@@ -364,27 +401,25 @@ impl SessionState {
         unsafe { SessionState_isPlaying(self.wss) }
     }
 
-    /// ![](https://upload.wikimedia.org/wikipedia/commons/5/59/QSicon_missing.svg)
     /// Get the time at which a transport start/stop occurs.
     pub fn time_for_is_playing(&self) -> i64 {
-        unimplemented!()
+        unsafe { SessionState_timeForIsPlaying(self.wss) }
     }
 
-    /// ![](https://upload.wikimedia.org/wikipedia/commons/5/59/QSicon_missing.svg)
     /// Convenience function to attempt to map the given beat to the time
     /// when transport is starting to play in context of the given quantum.
     /// This function evaluates to a no-op if isPlaying() equals false.
-    pub fn request_beat_at_start_playing_time(&mut self, _beat: f64, _quantum: f64) {
-        unimplemented!()
+    pub fn request_beat_at_start_playing_time(&mut self, beat: f64, quantum: f64) {
+        unsafe { SessionState_requestBeatAtStartPlayingTime(self.wss, beat, quantum) }
     }
 
-    /// ![](https://upload.wikimedia.org/wikipedia/commons/5/59/QSicon_missing.svg)
     /// Convenience function to start or stop transport at a given time and
     /// attempt to map the given beat to this time in context of the given quantum.
     pub fn set_is_playing_and_request_beat_at_time(&mut self,
-        _is_playing: bool, _time: i64, _beat: f64, _quantum: f64) {
+        is_playing: bool, time: i64, beat: f64, quantum: f64) {
 
-        unimplemented!()
+        unsafe { SessionState_setIsPlayingAndRequestBeatAtTime(self.wss, 
+            is_playing, time, beat, quantum) }
     }
 }
 
