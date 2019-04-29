@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/magdaddy/ableton-link-rs.svg?branch=master)](https://travis-ci.com/magdaddy/ableton-link-rs)
+
 # ableton-link-rs
 
 A wrapper for the [Ableton Link](https://github.com/Ableton/link) library, a technology that synchronizes musical beat, 
