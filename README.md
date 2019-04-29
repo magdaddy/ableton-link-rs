@@ -15,3 +15,10 @@ For further details, see [Ableton Link](https://github.com/Ableton/link).
 Ableton Link is dual licensed under GPLv2+ and a proprietary license. 
 If you would like to incorporate Link into a proprietary software application, please contact link-devs@ableton.com.
 
+## Remarks
+
+This is my first shot at wrapping a c++ library for Rust. Also, I'm pretty much a c/c++ noob. So expect some rough edges.
+
+I'm not totally sure about the all the design choices, especially the `with_app/audio_session_state`- methods. If you see a better way, PR's are welcome.
+
+This has only been tested on macOS and seems to compile on Linux as well. Don't know about Windows or others...
