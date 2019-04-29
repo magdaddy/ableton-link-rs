@@ -399,14 +399,17 @@ impl Drop for Clock{
 }
 
 impl Clock {
+    #[cfg(target_os = "macos")]
     pub fn ticks_to_micros(&self, ticks: u64) -> i64 {
         unsafe { Clock_ticksToMicros(self.wc, ticks) }
     }
 
+    #[cfg(target_os = "macos")]
     pub fn micros_to_ticks(&self, micros: i64) -> u64 {
         unsafe { Clock_microsToTicks(self.wc, micros) }
     }
 
+    #[cfg(target_os = "macos")]
     pub fn ticks(&self) -> u64 {
         unsafe { Clock_ticks(self.wc) }
     }

@@ -122,6 +122,7 @@ void Clock_destroy(WClock* cp) {
     delete reinterpret_cast<ableton::Link::Clock*>(cp);
 }
 
+#if defined(__APPLE__)
 int64_t Clock_ticksToMicros(WClock* cp, uint64_t ticks) {
     return reinterpret_cast<ableton::Link::Clock*>(cp)->ticksToMicros(ticks).count();
 }
@@ -134,6 +135,7 @@ uint64_t Clock_microsToTicks(WClock* cp, int64_t micros) {
 uint64_t Clock_ticks(WClock* cp) {
     return reinterpret_cast<ableton::Link::Clock*>(cp)->ticks();
 }
+#endif
 
 int64_t Clock_micros(WClock* cp) {
     return reinterpret_cast<ableton::Link::Clock*>(cp)->micros().count();

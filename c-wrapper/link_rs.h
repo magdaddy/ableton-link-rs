@@ -54,10 +54,13 @@ bool SessionState_isPlaying(WSessionState* sp);
 
 void Clock_destroy(WClock* cp);
 
+#if defined(__APPLE__)
 int64_t Clock_ticksToMicros(WClock* cp, uint64_t ticks);
 uint64_t Clock_microsToTicks(WClock* cp, int64_t micros);
 
 uint64_t Clock_ticks(WClock* cp);
+#endif
+
 int64_t Clock_micros(WClock* cp);
 
 
