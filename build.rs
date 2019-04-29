@@ -1,6 +1,15 @@
 use cmake::Config;
 use bindgen::builder;
 
+#[cfg(target_os = "macos")]
+fn link_cpp() {
+    // IMPORTANT!!! otherwise linker errors, apparently only on macOS
+    println!("cargo:rustc-link-lib=c++");  
+}
+
+#[cfg(not(target_os = "macos"))]
+fn link_cpp() {}
+
 fn main() {
     // cmake
     // Builds the project in the directory located in `libfoo`, installing it
@@ -13,8 +22,7 @@ fn main() {
     let builddir = dst.join("build");
     println!("cargo:rustc-link-search=native={}", builddir.display());
     println!("cargo:rustc-link-lib=static=linkrs");
-    // IMPORTANT!!! otherwise linker errors, apparently only on macOS
-    println!("cargo:rustc-link-lib=c++");  
+    link_cpp();
 
     // bindgen
     let bindings = builder()
