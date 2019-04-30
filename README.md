@@ -12,7 +12,7 @@ For further details, see [Ableton Link](https://github.com/Ableton/link).
 
 ## Remarks
 
-This is my first shot at wrapping a c++ library for Rust. Also, I'm pretty much a c/c++ noob. So expect some rough edges.
+This is my first shot at wrapping a C++ library for Rust. Also, I'm pretty much a C/C++ noob. So expect some rough edges.
 
 I'm not totally sure about the all the design choices, especially the `with_app/audio_session_state`- methods. If you see a better way, PR's are welcome.
 

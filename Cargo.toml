@@ -3,6 +3,9 @@ name = "ableton-link"
 version = "0.1.0"
 authors = ["Magnus Herold <magnus.herold@gmail.com>"]
 edition = "2018"
+description = "Rust bindings for Ableton Link"
+license-file = "LICENSE.md"
+repository = "https://github.com/magdaddy/ableton-link-rs"
 
 [dependencies]
 

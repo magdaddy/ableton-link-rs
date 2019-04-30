@@ -1,3 +1,13 @@
+//! An overview of Link concepts can be found at
+//! [http://ableton.github.io/link](http://ableton.github.io/link).
+//! 
+//! Then see the doc of [Link](struct.Link.html) and
+//! [SessionState](struct.SessionState.html).
+//! Most of it is directly taken from the original Link docs.
+//! 
+//! All i64 time values are in microseconds and should be used with the
+//! [Clock](struct.Clock.html).
+
 #[allow(non_camel_case_types)]
 #[allow(non_snake_case)]
 mod sys {
