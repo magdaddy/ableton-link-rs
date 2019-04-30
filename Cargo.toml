@@ -4,8 +4,14 @@ version = "0.1.0"
 authors = ["Magnus Herold <magnus.herold@gmail.com>"]
 edition = "2018"
 description = "Rust bindings for Ableton Link"
+readme = "README.md"
 license-file = "LICENSE.md"
 repository = "https://github.com/magdaddy/ableton-link-rs"
+keywords = ["ableton", "link"]
+categories = ["api-bindings"]
+
+[badges]
+travis-ci = { repository = "magdaddy/ableton-link-rs", branch = "master" }
 
 [dependencies]
 
