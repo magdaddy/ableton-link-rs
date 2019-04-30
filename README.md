@@ -10,11 +10,6 @@ follow. Anyone can join or leave without disrupting the session.
 
 For further details, see [Ableton Link](https://github.com/Ableton/link).
 
-## License
-
-Ableton Link is dual licensed under GPLv2+ and a proprietary license. 
-If you would like to incorporate Link into a proprietary software application, please contact link-devs@ableton.com.
-
 ## Remarks
 
 This is my first shot at wrapping a c++ library for Rust. Also, I'm pretty much a c/c++ noob. So expect some rough edges.
