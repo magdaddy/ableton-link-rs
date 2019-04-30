@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/magdaddy/ableton-link-rs.svg?branch=master)](https://travis-ci.com/magdaddy/ableton-link-rs)
+[![docs](https://docs.rs/ableton-link/badge.svg)](https://docs.rs/ableton-link)
 
 # ableton-link-rs
 
