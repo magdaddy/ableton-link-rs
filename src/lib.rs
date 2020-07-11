@@ -55,6 +55,9 @@ pub struct Link {
     wlink: *mut WLink,
 }
 
+unsafe impl Send for Link {}
+unsafe impl Sync for Link {}
+
 impl Drop for Link {
     fn drop(&mut self) {
         unsafe { Link_destroy(self.wlink) }
