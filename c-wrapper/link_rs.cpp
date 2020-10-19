@@ -52,7 +52,7 @@ WClock* Link_clock(WLink* lp) {
 
 void Link_withAudioSessionState(WLink* lp, RustClosurePtr cp, void* closure_data) {
     auto ss = reinterpret_cast<ableton::Link*>(lp)->captureAudioSessionState();
-    cp(closure_data, reinterpret_cast<WSessionState*>(&ss));
+    cp(closure_data, reinterpret_cast<WSessionState*>(&ss), lp);
 }
 
 void Link_commitAudioSessionState(WLink* lp, WSessionState* ssp) {
@@ -68,7 +68,7 @@ WSessionState* Link_captureAppSessionState(WLink* lp) {
 
 void Link_withAppSessionState(WLink* lp, RustClosurePtr cp, void* closure_data) {
     auto ss = reinterpret_cast<ableton::Link*>(lp)->captureAppSessionState();
-    cp(closure_data, reinterpret_cast<WSessionState*>(&ss));
+    cp(closure_data, reinterpret_cast<WSessionState*>(&ss), lp);
 }
 
 void Link_commitAppSessionState(WLink* lp, WSessionState* ssp) {
@@ -78,7 +78,7 @@ void Link_commitAppSessionState(WLink* lp, WSessionState* ssp) {
 
 // SessionState
 
-void SessionState_destroy(WSessionState* ssp) { 
+void SessionState_destroy(WSessionState* ssp) {
     delete reinterpret_cast<ableton::Link::SessionState*>(ssp);
 }
 
@@ -170,4 +170,3 @@ uint64_t Clock_ticks(WClock* cp) {
 int64_t Clock_micros(WClock* cp) {
     return reinterpret_cast<ableton::Link::Clock*>(cp)->micros().count();
 }
-

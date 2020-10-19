@@ -191,13 +191,13 @@ impl Link {
             Link_withAudioSessionState(self.wlink, Some(closure_wrapper::<F>), user_data);
         }
 
-        extern fn closure_wrapper<F>(closure: *mut c_void, wss: *mut WSessionState)
+        extern fn closure_wrapper<F>(closure: *mut c_void, wss: *mut WSessionState, link: *mut WLink)
             where F: FnMut(SessionState)
         {
             let opt_closure = closure as *mut Option<F>;
             unsafe {
                 let mut fnx = (*opt_closure).take().unwrap();
-                let ss = SessionState { wss };
+                let ss = SessionState { wss, link , audio_session_state: true };
                 fnx(ss);
             }
         }
@@ -248,13 +248,13 @@ impl Link {
             Link_withAppSessionState(self.wlink, Some(closure_wrapper::<F>), user_data);
         }
 
-        extern fn closure_wrapper<F>(closure: *mut c_void, wss: *mut WSessionState)
+        extern fn closure_wrapper<F>(closure: *mut c_void, wss: *mut WSessionState, link: *mut WLink)
             where F: FnMut(SessionState)
         {
             let opt_closure = closure as *mut Option<F>;
             unsafe {
                 let mut fnx = (*opt_closure).take().unwrap();
-                let ss = SessionState { wss };
+                let ss = SessionState { wss, link, audio_session_state: false };
                 fnx(ss);
             }
         }
@@ -294,7 +294,9 @@ impl Link {
 /// persists when joining or leaving a Link session. After joining a Link session
 /// start/stop change requests will be communicated to all connected peers.
 pub struct SessionState {
+    link: *mut WLink,
     wss: *mut WSessionState,
+    audio_session_state: bool,
 }
 
 // impl Drop for SessionState {
@@ -305,6 +307,16 @@ pub struct SessionState {
 
 impl SessionState {
     /// The tempo of the timeline, in bpm.
+
+    pub fn commit(&self) {
+        unsafe {
+            if self.audio_session_state {
+                Link_commitAudioSessionState(self.link, self.wss)
+            } else {
+                Link_commitAppSessionState(self.link, self.wss)
+            }
+        }
+    }
     pub fn tempo(&self) -> f64 {
         unsafe { SessionState_tempo(self.wss) }
     }

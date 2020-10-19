@@ -3,13 +3,13 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-extern "C" {  
+extern "C" {
 #endif
 
 typedef struct WLink WLink;
 typedef struct WSessionState WSessionState;
 typedef struct WClock WClock;
-typedef void (*RustClosurePtr)(void*, WSessionState*);
+typedef void (*RustClosurePtr)(void*, WSessionState*, WLink*);
 
 // Link
 
