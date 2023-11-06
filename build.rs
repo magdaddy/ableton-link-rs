@@ -29,9 +29,9 @@ fn main() {
     // bindgen
     let bindings = builder()
                     .header("c-wrapper/link_rs.h")
-                    .whitelist_function("Link_.*")
-                    .whitelist_function("SessionState_.*")
-                    .whitelist_function("Clock_.*")
+                    .allowlist_function("Link_.*")
+                    .allowlist_function("SessionState_.*")
+                    .allowlist_function("Clock_.*")
                     .generate()
                     .expect("generate bindings");
     let outfile = dst.join("link_rs.rs");
