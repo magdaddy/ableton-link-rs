@@ -17,4 +17,4 @@ travis-ci = { repository = "magdaddy/ableton-link-rs", branch = "master" }
 
 [build-dependencies]
 cmake = "0.1"
-bindgen = "0.69"
+bindgen = "0.53.1"

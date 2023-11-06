@@ -28,12 +28,16 @@ fn main() {
 
     // bindgen
     let bindings = builder()
-                    .header("c-wrapper/link_rs.h")
-                    .allowlist_function("Link_.*")
-                    .allowlist_function("SessionState_.*")
-                    .allowlist_function("Clock_.*")
-                    .generate()
-                    .expect("generate bindings");
+                .header("c-wrapper/link_rs.h")
+                .clang_arg("-isysroot")
+                .clang_arg("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
+                .clang_arg("-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include")
+                .whitelist_function("Link_.*")
+                .whitelist_function("SessionState_.*")
+                .whitelist_function("Clock_.*")
+                .generate()
+                .expect("generate bindings");
+
     let outfile = dst.join("link_rs.rs");
     bindings.write_to_file(outfile).expect("write bindings to file");
 

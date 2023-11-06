@@ -100,7 +100,7 @@ impl Link {
     /// * Thread-safe: yes
     /// * Realtime-safe: yes
     pub fn num_peers(&self) -> usize {
-        unsafe { Link_numPeers(self.wlink) }
+        unsafe { Link_numPeers(self.wlink) as usize }
     }
 
     /// Register a callback to be notified when the number of
@@ -109,9 +109,9 @@ impl Link {
     /// * Realtime-safe: no
     /// 
     /// The callback is invoked on a Link-managed thread.
-    pub fn set_num_peers_callback(&mut self, callback: extern fn(usize)) {
+    pub fn set_num_peers_callback(&mut self, callback: extern fn(u64)) {
         unsafe {
-            let cb = callback as unsafe extern fn(usize);
+            let cb = callback as unsafe extern fn(u64);
             Link_setNumPeersCallback(self.wlink, Some(cb));
         }
     }
